@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Water & Pee Tracker</title>
+<style>
+:root{--bg:#f6f8fb;--card:#fff;--text:#16212e;--muted:#6b7a8c;--water:#2f80ed;--pee:#f2a900;--line:#e3e8ef;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10161d;--card:#1a232d;--text:#e9eef4;--muted:#93a1b2;--line:#2a3643}}
+:root[data-theme="dark"]{--bg:#10161d;--card:#1a232d;--text:#e9eef4;--muted:#93a1b2;--line:#2a3643}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;padding:16px;max-width:480px;margin-inline:auto}
+h1{font-size:20px;margin:4px 0 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:14px}
+.btn{width:100%;border:0;border-radius:14px;padding:18px;font-size:18px;font-weight:600;color:#fff;cursor:pointer}
+.btn:active{transform:scale(.98)}
+.water{background:var(--water)}.pee{background:var(--pee);color:#1d1400}
+input{width:100%;padding:12px;margin:10px 0;border:1px solid var(--line);border-radius:10px;font-size:16px;background:var(--bg);color:var(--text)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.chip{border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:20px;padding:6px 12px;font-size:14px;cursor:pointer}
+h2{font-size:15px;margin:16px 0 6px;color:var(--muted)}
+.row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:15px;gap:8px}
+.row:last-child{border:0}
+.del{background:none;border:0;color:var(--muted);font-size:18px;cursor:pointer}
+.sum{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<h1>Water &amp; Pee Tracker</h1>
+<div class="sum" id="st" style="margin:-8px 0 12px"></div>
+
+<div class="card">
+  <button class="btn water" id="w">💧 I drank water</button>
+  <input id="c" placeholder="How much? e.g. 1 gulp, 2 gulps, 1 glass">
+  <div class="chips" id="chips"></div>
+</div>
+
+<div class="card"><button class="btn pee" id="p">🚽 I urinated</button></div>
+
+<div class="card">
+  <button class="btn" style="background:#2e9b5f" id="dl">⬇️ Download Excel/CSV</button>
+  <button class="chip" style="margin-top:10px" id="rs">⬆️ Restore from CSV</button>
+  <input type="file" id="f" accept=".csv" style="display:none">
+</div>
+
+<div id="log"></div>
+
+<script>
+var KEY="wp_log_v1", data=[];
+try{data=JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){data=[]}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}}
+function dayKey(t){var d=new Date(t);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function fmtDay(k){var p=k.split("-");return new Date(p[0],p[1]-1,p[2]).toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short",year:"numeric"})}
+function fmtTime(t){return new Date(t).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}
+var URL_SHEET="https://script.google.com/macros/s/AKfycbx7l6K__o5ttjNMa7XSOeh7mKxjPlEYwuJdRXUhnl_kPX50aI27GXZkJw7hit-yIt13_w/exec";
+var syncing=false;
+function status(){var n=data.filter(function(x){return !x.s}).length;
+  document.getElementById("st").textContent=n?("⏳ "+n+" waiting to save to Google Sheet"):"✅ All saved to Google Sheet"}
+function sync(){
+  if(syncing)return;var todo=data.filter(function(x){return !x.s});
+  if(!todo.length){status();return}
+  syncing=true;
+  (function next(i){
+    if(i>=todo.length){syncing=false;save();render();return}
+    var x=todo[i];
+    fetch(URL_SHEET,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},
+      body:JSON.stringify({id:String(x.t),date:dayKey(x.t),
+        time:new Date(x.t).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",hour12:false}),
+        type:x.type==="water"?"Drink water":"Urinate",comment:x.note})})
+    .then(function(){x.s=1;save();next(i+1)})
+    .catch(function(){syncing=false;status()});
+  })(0);
+}
+window.addEventListener("online",sync);
+function add(type,note){data.push({t:Date.now(),type:type,note:note||""});save();render();sync()}
+document.getElementById("w").onclick=function(){var c=document.getElementById("c");add("water",c.value.trim());c.value=""};
+document.getElementById("p").onclick=function(){add("pee")};
+["1 gulp","2 gulps","3 gulps","1 glass","1 bottle"].forEach(function(s){
+  var b=document.createElement("button");b.className="chip";b.textContent=s;
+  b.onclick=function(){document.getElementById("c").value=s};
+  document.getElementById("chips").appendChild(b)});
+function del(t){data=data.filter(function(x){return x.t!==t});save();render()}
+function render(){
+  var groups={};data.forEach(function(x){var k=dayKey(x.t);(groups[k]=groups[k]||[]).push(x)});
+  var keys=Object.keys(groups).sort().reverse(),out=document.getElementById("log");out.innerHTML="";
+  status();
+  if(!keys.length){out.innerHTML='<p class="sum">No records yet. Tap a button above.</p>';return}
+  keys.forEach(function(k){
+    var items=groups[k].sort(function(a,b){return b.t-a.t});
+    var w=items.filter(function(x){return x.type==="water"}).length,p=items.length-w;
+    var card=document.createElement("div");card.className="card";
+    card.innerHTML="<strong>"+fmtDay(k)+'</strong><div class="sum">💧 '+w+" times · 🚽 "+p+" times</div>";
+    items.forEach(function(x){
+      var r=document.createElement("div");r.className="row";
+      var s=document.createElement("span");
+      s.textContent=(x.type==="water"?"💧 ":"🚽 ")+fmtTime(x.t)+(x.note?" — "+x.note:"");
+      var d=document.createElement("button");d.className="del";d.textContent="✕";d.onclick=function(){del(x.t)};
+      r.appendChild(s);r.appendChild(d);card.appendChild(r)});
+    out.appendChild(card)});
+}
+function q(s){return '"'+String(s).replace(/"/g,'""')+'"'}
+document.getElementById("dl").onclick=function(){
+  var rows=["Date,Time,Type,Comment,Timestamp"];
+  data.slice().sort(function(a,b){return a.t-b.t}).forEach(function(x){
+    rows.push([dayKey(x.t),new Date(x.t).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",hour12:false}),
+      x.type==="water"?"Drink water":"Urinate",q(x.note),x.t].join(","))});
+  var blob=new Blob(["\ufeff"+rows.join("\r\n")],{type:"text/csv"});
+  var a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download="water-pee-history-"+dayKey(Date.now())+".csv";document.body.appendChild(a);a.click();a.remove()};
+document.getElementById("rs").onclick=function(){document.getElementById("f").click()};
+document.getElementById("f").onchange=function(e){
+  var fl=e.target.files[0];if(!fl)return;var r=new FileReader();
+  r.onload=function(){
+    var have={};data.forEach(function(x){have[x.t]=1});
+    r.result.replace(/^\ufeff/,"").split(/\r?\n/).slice(1).forEach(function(line){
+      var m=line.match(/^([^,]*),([^,]*),([^,]*),("(?:[^"]|"")*"|[^,]*),(\d+)$/);
+      if(!m)return;var t=+m[5];if(have[t])return;
+      data.push({t:t,type:/water/i.test(m[3])?"water":"pee",note:m[4].replace(/^"|"$/g,"").replace(/""/g,'"')})});
+    save();render();e.target.value=""};
+  r.readAsText(fl)};
+render();sync();
+</script>
+</body>
+</html>
