@@ -78,6 +78,14 @@ function sync(){
     .catch(function(){syncing=false;status()});
   })(0);
 }
+function loadSheet(){
+  fetch(URL_SHEET).then(function(r){return r.json()}).then(function(rows){
+    var have={};data.forEach(function(x){have[x.t]=1});
+    rows.forEach(function(r){var t=+r.id;if(!t||have[t])return;
+      data.push({t:t,type:/water/i.test(r.type)?"water":"pee",note:r.comment||"",s:1})});
+    save();render();sync();
+  }).catch(function(){sync()});
+}
 window.addEventListener("online",sync);
 function add(type,note){data.push({t:Date.now(),type:type,note:note||""});save();render();sync()}
 document.getElementById("w").onclick=function(){var c=document.getElementById("c");add("water",c.value.trim());c.value=""};
@@ -123,9 +131,9 @@ document.getElementById("f").onchange=function(e){
       var m=line.match(/^([^,]*),([^,]*),([^,]*),("(?:[^"]|"")*"|[^,]*),(\d+)$/);
       if(!m)return;var t=+m[5];if(have[t])return;
       data.push({t:t,type:/water/i.test(m[3])?"water":"pee",note:m[4].replace(/^"|"$/g,"").replace(/""/g,'"')})});
-    save();render();e.target.value=""};
+    save();render();sync();e.target.value=""};
   r.readAsText(fl)};
-render();sync();
+render();loadSheet();
 </script>
 </body>
 </html>
