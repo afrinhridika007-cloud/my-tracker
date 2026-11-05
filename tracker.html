@@ -10,130 +10,211 @@
 <meta name="theme-color" content="#2f80ed">
 <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAES0lEQVR4nO3c3XXUShBF4TaLCJyIydAmQydiYuChWQJmfGSN+kd9qvb3yl24Z2p3yRfDPL28fRTgM9+uPgDWRRyQiAMScUAiDkjEAYk4IBEHJOKARBz/eX99vvoICyGOv2oZ9LEhDkjE8ce/C4PlUREHJOIo5bNVwfIoxIEdxCGXBMsjexz7BSTvI3sc2JE6jiOLIfPySB0H9uWN4/hKSLs8ksbx6Lxz9pE0DhyRMY5zayDh8sgYBw5KF0fLAsi2PNLFgeNyxdF+9VMtj0Rx9Jprnj4SxYFHZYmj73VPsjxSxDFilhn6iB/HuCmG7+P71QcYaMLw6pf48fPX6C90ibCbY+a1jrpCYsYxf1oh+wgYx1VzitdHtDiunVCwPkLFscJsVjhDL3HiWGcq65ykUZA4VpvHauc5J0Ica05izVM9JEIcGMQ+jpUv6MpnO8I7jvXf/fVPuMM7DgxFHJCM43DZ2C7nvGccB0ZzjcPrOnqdduMaByYgDkjEAckyDsdHuOOZLePAHMQBiTggEQck4oBEHJCIA5JfHI5/YFDZndwvDkxjFofd5bvhdX6nOLzeWcXoVTjFgcls4jC6cF9yeS02cWA+jzhcrtpxFq/I4zPBPv3QLYv3tzL90DCPzfEpl3fc5Zz3jOPAaMZxuDxWXM55zzUOr3fc67Qb1zgwgWUcjhfR8cx+cTi+y5Xdyf3iwDRmcdhdvhte5zeLAzMRBySnOLx2smL0KpziwGQeP5Utgy/c5J/6vr8+W/w0ziaOEfYntP2q0YOgr6RxPHRx63+cMJGM33OcW+kWD4K+0sXRMuNsfXjE0Wult0+3Vx8WDymPOLroNdc8+yNLHH0nmqSPLHHghBRxjLjoGZZHijhwDnFAih/HuP0f/skSPw6cRhyQiAOSRxzxnu4Wr8gjDlyCOCDFj2Po3/Yb9DsvIn4cOM0mDovv4A5yeS02cbQYsf/DP1OKVxwuF26f0atwiqNF34ueYW2UPHGUfhNNUkaxi6NxJ7fPtfF3MHqmFLs42rVMN8/OqPziaL9852bcXobX2iilPL28fVx9hjO6XOKD05r5tZaS9N/KVtvU3T9bfRDXzVGshue4Norj9xwbl3fc5Zz3jOMoDu/7+ifc4R1HWfvdX/lsR9jHUVadwZqnekiEOMp6k1jtPOcEiaOsNI91TtIoThxljamscIZeQsVRrp5NpDJKyD8hveTD/4JlUUXbHJuZ0wpZRgm5OTYTVkjULKrIcVQjPog4dhOb+HFsuiySJFlUieKobqb7ZSupariRLo4bmWf/pbD/t4J2xAGJOCARByTigEQckIgDEnFAIg5IxAGJOCARByTigEQckIgDEnFAIg5IxAGJOCARByTigEQckIgDEnFAIg5IxAGJOCARByTigEQckIgDEnFAIg5IxAGJOCARByTigEQckIgDEnFAIg5IxAGJOCARByTigEQckIgDEnFA+g20pRBuPWjj2QAAAABJRU5ErkJggg==">
 <title>Water & Pee Tracker</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-:root{--bg:#f6f8fb;--card:#fff;--text:#16212e;--muted:#6b7a8c;--water:#2f80ed;--pee:#f2a900;--line:#e3e8ef;
-box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10161d;--card:#1a232d;--text:#e9eef4;--muted:#93a1b2;--line:#2a3643}}
-:root[data-theme="dark"]{--bg:#10161d;--card:#1a232d;--text:#e9eef4;--muted:#93a1b2;--line:#2a3643}
+:root{--bg:#f6f8fb;--card:#fff;--text:#16212e;--muted:#6b7a8c;--line:#e3e8ef;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root{--bg:#10161d;--card:#1a232d;--text:#e9eef4;--muted:#93a1b2;--line:#2a3643}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;padding:16px;max-width:480px;margin-inline:auto}
-h1{font-size:20px;margin:4px 0 14px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:14px}
-.btn{width:100%;border:0;border-radius:14px;padding:18px;font-size:18px;font-weight:600;color:#fff;cursor:pointer}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;padding:14px;max-width:480px;margin-inline:auto}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+h1{font-size:19px;margin:0}
+.menu{border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:10px;font-size:20px;padding:4px 12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:12px}
+.btn{width:100%;border:0;border-radius:14px;padding:16px;font-size:17px;font-weight:600;color:#fff}
 .btn:active{transform:scale(.98)}
-.water{background:var(--water)}.pee{background:var(--pee);color:#1d1400}
-input{width:100%;padding:12px;margin:10px 0;border:1px solid var(--line);border-radius:10px;font-size:16px;background:var(--bg);color:var(--text)}
-.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.chip{border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:20px;padding:6px 12px;font-size:14px;cursor:pointer}
-h2{font-size:15px;margin:16px 0 6px;color:var(--muted)}
-.row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:15px;gap:8px}
+input{width:100%;padding:11px;margin:8px 0;border:1px solid var(--line);border-radius:10px;font-size:16px;background:var(--bg);color:var(--text)}
+.chips,.tabs,.two{display:flex;gap:6px;flex-wrap:wrap}
+.chip,.tab{border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:20px;padding:6px 12px;font-size:14px}
+.tab{flex:1;border-radius:10px;padding:8px}.tab.on{background:var(--text);color:var(--bg)}
+.two .btn{flex:1;padding:14px;font-size:15px}
+h2{font-size:14px;margin:0 0 8px;color:var(--muted);font-weight:600}
+.row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:15px;gap:8px}
 .row:last-child{border:0}
-.del{background:none;border:0;color:var(--muted);font-size:18px;cursor:pointer}
+.del{background:none;border:0;color:var(--muted);font-size:18px}
 .sum{font-size:13px;color:var(--muted)}
+.hide{display:none}
+canvas{max-height:260px}
 </style>
 </head>
 <body>
-<h1>Water &amp; Pee Tracker</h1>
-<div class="sum" id="st" style="margin:-8px 0 12px"></div>
+<div class="top"><h1 id="ttl">Water &amp; Pee Tracker</h1><button class="menu" id="mn">☰</button></div>
+<div class="card hide" id="mp"><div class="two"><button class="tab" id="gh">Home</button><button class="tab" id="gr">Report</button></div></div>
+<div class="sum" id="st" style="margin-bottom:10px"></div>
+
+<div id="home">
+<div class="card"><h2>🕐 Time (change it if you forgot to punch)</h2><input type="datetime-local" id="when" style="margin:0"></div>
 
 <div class="card">
-  <button class="btn water" id="w">💧 I drank water</button>
+  <button class="btn" style="background:#2f80ed" id="w">💧 Water</button>
   <input id="c" placeholder="How much? e.g. 1 gulp, 2 gulps, 1 glass">
-  <div class="chips" id="chips"></div>
+  <div class="chips" data-for="c"></div>
 </div>
 
-<div class="card"><button class="btn pee" id="p">🚽 I urinated</button></div>
+<div class="card">
+  <div class="tabs" id="ct"></div>
+  <button class="btn" style="background:#8a5a2b;margin-top:8px" id="cb"></button>
+  <input id="cc" placeholder="How much? e.g. 1 cup, 1 bottle">
+  <div class="chips" data-for="cc"></div>
+</div>
+
+<div class="card"><button class="btn" style="background:#f2a900;color:#1d1400" id="p">🚽 Urinated</button></div>
+
+<div class="card"><h2 id="ps">Period</h2>
+  <div class="two"><button class="btn" style="background:#c0392b" id="pst">🩸 Period started</button><button class="btn" style="background:#7d3c98" id="pen">Period ended</button></div></div>
 
 <div class="card">
   <button class="btn" style="background:#2e9b5f" id="dl">⬇️ Download Excel/CSV</button>
   <button class="chip" style="margin-top:10px" id="rs">⬆️ Restore from CSV</button>
   <input type="file" id="f" accept=".csv" style="display:none">
 </div>
-
 <div id="log"></div>
+</div>
+
+<div id="rep" class="hide">
+  <div class="card">
+    <div class="tabs"><button class="tab on" data-m="day">Daily</button><button class="tab" data-m="week">Weekly</button><button class="tab" data-m="month">Monthly</button></div>
+    <input type="date" id="rd">
+    <div class="sum" id="rs2"></div>
+  </div>
+  <div class="card"><canvas id="c1"></canvas></div>
+  <div class="card hide" id="c2c"><h2>Busiest time of day</h2><canvas id="c2"></canvas></div>
+  <div class="sum">Red shading = period days. Dashed lines = trend. Tap a name above the chart to hide or show it.</div>
+</div>
 
 <script>
-var KEY="wp_log_v1", data=[];
-try{data=JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){data=[]}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}}
-function dayKey(t){var d=new Date(t);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+var KEY="wp_log_v1",DK="wp_del_v1",URL_SHEET="https://script.google.com/macros/s/AKfycbx7l6K__o5ttjNMa7XSOeh7mKxjPlEYwuJdRXUhnl_kPX50aI27GXZkJw7hit-yIt13_w/exec";
+var TY={water:["💧","Drink water"],tea:["🍵","Tea"],coffee:["☕","Coffee"],cold:["🥤","Cold drink"],pee:["🚽","Urinate"],ps:["🩸","Period start"],pe:["🩸","Period end"]};
+var data=[],dels=[],syncing=false,edited=false,cafe="tea";
+try{data=JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){}
+try{dels=JSON.parse(localStorage.getItem(DK)||"[]")}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(data));localStorage.setItem(DK,JSON.stringify(dels))}catch(e){}}
+function $(i){return document.getElementById(i)}
+function p2(n){return String(n).padStart(2,"0")}
+function dayKey(t){var d=new Date(t);return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate())}
+function hm(t){var d=new Date(t);return p2(d.getHours())+":"+p2(d.getMinutes())}
 function fmtDay(k){var p=k.split("-");return new Date(p[0],p[1]-1,p[2]).toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short",year:"numeric"})}
-function fmtTime(t){return new Date(t).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}
-var URL_SHEET="https://script.google.com/macros/s/AKfycbx7l6K__o5ttjNMa7XSOeh7mKxjPlEYwuJdRXUhnl_kPX50aI27GXZkJw7hit-yIt13_w/exec";
-var syncing=false;
-function status(){var n=data.filter(function(x){return !x.s}).length;
-  document.getElementById("st").textContent=n?("⏳ "+n+" waiting to save to Google Sheet"):"✅ All saved to Google Sheet"}
+function nameType(n){for(var k in TY){if(TY[k][1].toLowerCase()===String(n).trim().toLowerCase())return k}return /urin|pee/i.test(n)?"pee":"water"}
+function setNow(){if(!edited){var n=Date.now();$("when").value=dayKey(n)+"T"+hm(n)}}
+$("when").oninput=function(){edited=true};
+function getT(){if(!edited||!$("when").value)return Date.now();return new Date($("when").value).getTime()}
+
+function status(){var n=data.filter(function(x){return !x.s}).length+dels.length;$("st").textContent=n?("⏳ "+n+" waiting to save to Google Sheet"):"✅ All saved to Google Sheet"}
+function post(b){return fetch(URL_SHEET,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},body:JSON.stringify(b)})}
 function sync(){
-  if(syncing)return;var todo=data.filter(function(x){return !x.s});
-  if(!todo.length){status();return}
+  if(syncing)return;
+  var tasks=[];
+  dels.slice().forEach(function(id){tasks.push({b:{action:"delete",id:id},ok:function(){dels=dels.filter(function(d){return d!==id})}})});
+  data.filter(function(x){return !x.s}).forEach(function(x){tasks.push({b:{id:String(x.t),date:dayKey(x.t),time:hm(x.t),type:TY[x.type][1],comment:x.note},ok:function(){x.s=1}})});
+  if(!tasks.length){status();return}
   syncing=true;
   (function next(i){
-    if(i>=todo.length){syncing=false;save();render();return}
-    var x=todo[i];
-    fetch(URL_SHEET,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},
-      body:JSON.stringify({id:String(x.t),date:dayKey(x.t),
-        time:new Date(x.t).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",hour12:false}),
-        type:x.type==="water"?"Drink water":"Urinate",comment:x.note})})
-    .then(function(){x.s=1;save();next(i+1)})
-    .catch(function(){syncing=false;status()});
+    if(i>=tasks.length){syncing=false;save();status();return}
+    post(tasks[i].b).then(function(){tasks[i].ok();save();next(i+1)}).catch(function(){syncing=false;status()});
   })(0);
 }
 function loadSheet(){
   fetch(URL_SHEET).then(function(r){return r.json()}).then(function(rows){
-    var have={};data.forEach(function(x){have[x.t]=1});
-    rows.forEach(function(r){var t=+r.id;if(!t||have[t])return;
-      data.push({t:t,type:/water/i.test(r.type)?"water":"pee",note:r.comment||"",s:1})});
-    save();render();sync();
+    var keep=data.filter(function(x){return !x.s}),have={};
+    keep.forEach(function(x){have[x.t]=1});
+    var fresh=[];
+    rows.forEach(function(r){var t=+r.id;if(!t||have[t]||dels.indexOf(String(r.id))>-1)return;
+      fresh.push({t:t,type:nameType(r.type),note:r.comment||"",s:1})});
+    data=fresh.concat(keep);save();render();sync();
   }).catch(function(){sync()});
 }
 window.addEventListener("online",sync);
-function add(type,note){data.push({t:Date.now(),type:type,note:note||""});save();render();sync()}
-document.getElementById("w").onclick=function(){var c=document.getElementById("c");add("water",c.value.trim());c.value=""};
-document.getElementById("p").onclick=function(){add("pee")};
-["1 gulp","2 gulps","3 gulps","1 glass","1 bottle"].forEach(function(s){
-  var b=document.createElement("button");b.className="chip";b.textContent=s;
-  b.onclick=function(){document.getElementById("c").value=s};
-  document.getElementById("chips").appendChild(b)});
-function del(t){data=data.filter(function(x){return x.t!==t});save();render()}
+document.addEventListener("visibilitychange",function(){if(!document.hidden){setNow();sync()}});
+function add(type,note){data.push({t:getT(),type:type,note:note||""});edited=false;setNow();save();render();sync()}
+function del(t){data=data.filter(function(x){return x.t!==t});dels.push(String(t));save();render();sync()}
+
+$("w").onclick=function(){add("water",$("c").value.trim());$("c").value=""};
+$("p").onclick=function(){add("pee")};
+$("pst").onclick=function(){add("ps")};
+$("pen").onclick=function(){add("pe")};
+$("cb").onclick=function(){add(cafe,$("cc").value.trim());$("cc").value=""};
+["1 gulp","2 gulps","3 gulps","1 cup","1 bottle"].forEach(function(s){
+  document.querySelectorAll(".chips").forEach(function(box){
+    var b=document.createElement("button");b.className="chip";b.textContent=s;
+    b.onclick=function(){$(box.dataset["for"]).value=s};box.appendChild(b)})});
+[["tea","🍵 Tea"],["coffee","☕ Coffee"],["cold","🥤 Cold drink"]].forEach(function(a){
+  var b=document.createElement("button");b.className="tab"+(a[0]===cafe?" on":"");b.textContent=a[1];b.dataset.k=a[0];
+  b.onclick=function(){cafe=a[0];document.querySelectorAll("#ct .tab").forEach(function(x){x.classList.toggle("on",x.dataset.k===cafe)});label()};
+  $("ct").appendChild(b)});
+function label(){$("cb").textContent="☕ Caffeine"}
+label();
+
+function periods(){
+  var ev=data.filter(function(x){return x.type==="ps"||x.type==="pe"}).sort(function(a,b){return a.t-b.t}),out=[],cur=null;
+  ev.forEach(function(x){if(x.type==="ps"){if(!cur)cur={s:x.t,e:null}}else if(cur){cur.e=x.t;out.push(cur);cur=null}});
+  if(cur)out.push({s:cur.s,e:Date.now(),open:1});return out}
 function render(){
-  var groups={};data.forEach(function(x){var k=dayKey(x.t);(groups[k]=groups[k]||[]).push(x)});
-  var keys=Object.keys(groups).sort().reverse(),out=document.getElementById("log");out.innerHTML="";
+  var pr=periods(),last=pr[pr.length-1];
+  $("ps").textContent=last&&last.open?("Period running since "+fmtDay(dayKey(last.s))):"Period";
   status();
+  var g={};data.forEach(function(x){var k=dayKey(x.t);(g[k]=g[k]||[]).push(x)});
+  var keys=Object.keys(g).sort().reverse(),out=$("log");out.innerHTML="";
   if(!keys.length){out.innerHTML='<p class="sum">No records yet. Tap a button above.</p>';return}
   keys.forEach(function(k){
-    var items=groups[k].sort(function(a,b){return b.t-a.t});
-    var w=items.filter(function(x){return x.type==="water"}).length,p=items.length-w;
+    var it=g[k].sort(function(a,b){return b.t-a.t}),c={};it.forEach(function(x){c[x.type]=(c[x.type]||0)+1});
     var card=document.createElement("div");card.className="card";
-    card.innerHTML="<strong>"+fmtDay(k)+'</strong><div class="sum">💧 '+w+" times · 🚽 "+p+" times</div>";
-    items.forEach(function(x){
+    var sm=["water","tea","coffee","cold","pee"].filter(function(t){return c[t]}).map(function(t){return TY[t][0]+" "+c[t]}).join(" · ");
+    card.innerHTML="<strong>"+fmtDay(k)+'</strong><div class="sum">'+sm+"</div>";
+    it.forEach(function(x){
       var r=document.createElement("div");r.className="row";
-      var s=document.createElement("span");
-      s.textContent=(x.type==="water"?"💧 ":"🚽 ")+fmtTime(x.t)+(x.note?" — "+x.note:"");
-      var d=document.createElement("button");d.className="del";d.textContent="✕";d.onclick=function(){del(x.t)};
+      var s=document.createElement("span");s.textContent=TY[x.type][0]+" "+hm(x.t)+(x.type==="ps"?" Period started":x.type==="pe"?" Period ended":x.type==="pee"?"":" "+TY[x.type][1].replace("Drink water","")+(x.note?" — "+x.note:""));
+      var d=document.createElement("button");d.className="del";d.textContent="✕";d.onclick=function(){if(confirm("Delete this punch from the app and the Google Sheet?"))del(x.t)};
       r.appendChild(s);r.appendChild(d);card.appendChild(r)});
     out.appendChild(card)});
 }
+
 function q(s){return '"'+String(s).replace(/"/g,'""')+'"'}
-document.getElementById("dl").onclick=function(){
+$("dl").onclick=function(){
   var rows=["Date,Time,Type,Comment,Timestamp"];
-  data.slice().sort(function(a,b){return a.t-b.t}).forEach(function(x){
-    rows.push([dayKey(x.t),new Date(x.t).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",hour12:false}),
-      x.type==="water"?"Drink water":"Urinate",q(x.note),x.t].join(","))});
+  data.slice().sort(function(a,b){return a.t-b.t}).forEach(function(x){rows.push([dayKey(x.t),hm(x.t),TY[x.type][1],q(x.note),x.t].join(","))});
   var blob=new Blob(["\ufeff"+rows.join("\r\n")],{type:"text/csv"});
-  var a=document.createElement("a");a.href=URL.createObjectURL(blob);
-  a.download="water-pee-history-"+dayKey(Date.now())+".csv";document.body.appendChild(a);a.click();a.remove()};
-document.getElementById("rs").onclick=function(){document.getElementById("f").click()};
-document.getElementById("f").onchange=function(e){
-  var fl=e.target.files[0];if(!fl)return;var r=new FileReader();
-  r.onload=function(){
-    var have={};data.forEach(function(x){have[x.t]=1});
+  var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="water-pee-history-"+dayKey(Date.now())+".csv";document.body.appendChild(a);a.click();a.remove()};
+$("rs").onclick=function(){$("f").click()};
+$("f").onchange=function(e){var fl=e.target.files[0];if(!fl)return;var r=new FileReader();
+  r.onload=function(){var have={};data.forEach(function(x){have[x.t]=1});
     r.result.replace(/^\ufeff/,"").split(/\r?\n/).slice(1).forEach(function(line){
-      var m=line.match(/^([^,]*),([^,]*),([^,]*),("(?:[^"]|"")*"|[^,]*),(\d+)$/);
-      if(!m)return;var t=+m[5];if(have[t])return;
-      data.push({t:t,type:/water/i.test(m[3])?"water":"pee",note:m[4].replace(/^"|"$/g,"").replace(/""/g,'"')})});
-    save();render();sync();e.target.value=""};
-  r.readAsText(fl)};
-render();loadSheet();
+      var m=line.match(/^([^,]*),([^,]*),([^,]*),("(?:[^"]|"")*"|[^,]*),(\d+)$/);if(!m)return;
+      var t=+m[5];if(have[t])return;data.push({t:t,type:nameType(m[3]),note:m[4].replace(/^"|"$/g,"").replace(/""/g,'"')})});
+    save();render();sync();e.target.value=""};r.readAsText(fl)};
+
+$("mn").onclick=function(){$("mp").classList.toggle("hide")};
+function show(v){$("home").classList.toggle("hide",v!=="home");$("rep").classList.toggle("hide",v!=="rep");$("mp").classList.add("hide");$("ttl").textContent=v==="home"?"Water & Pee Tracker":"Report";if(v==="rep")report()}
+$("gh").onclick=function(){show("home")};$("gr").onclick=function(){show("rep")};
+var mode="day",ch1,ch2;
+document.querySelectorAll("#rep .tab").forEach(function(b){b.onclick=function(){mode=b.dataset.m;document.querySelectorAll("#rep .tab").forEach(function(x){x.classList.toggle("on",x===b)});report()}});
+$("rd").value=dayKey(Date.now());$("rd").onchange=function(){report()};
+var COL={pee:"#f2a900",water:"#2f80ed",tea:"#2e9b5f",coffee:"#8a5a2b",cold:"#9b59b6"},NM={pee:"Pee",water:"Water",tea:"Tea",coffee:"Coffee",cold:"Cold drink"};
+function trend(a){var n=a.length,sx=0,sy=0,sxy=0,sxx=0;a.forEach(function(y,x){sx+=x;sy+=y;sxy+=x*y;sxx+=x*x});var d=n*sxx-sx*sx||1,m=(n*sxy-sx*sy)/d,b=(sy-m*sx)/n;return a.map(function(_,x){return Math.round((m*x+b)*100)/100})}
+var shade={id:"shade",beforeDatasetsDraw:function(c,a,o){var f=o.flags;if(!f)return;var x=c.scales.x,y=c.chartArea,ctx=c.ctx,w=(y.right-y.left)/f.length;ctx.save();ctx.fillStyle="rgba(192,57,43,.18)";f.forEach(function(on,i){if(on)ctx.fillRect(x.getPixelForValue(i)-w/2,y.top,w,y.bottom-y.top)});ctx.restore()}};
+function report(){
+  if(typeof Chart==="undefined"){$("rs2").textContent="Graphs need internet the first time. Connect and reopen.";return}
+  var d=new Date($("rd").value+"T00:00"),B=[],labs=[];
+  if(mode==="day"){for(var h=0;h<24;h++){var s=new Date(d);s.setHours(h);B.push([s.getTime(),s.getTime()+36e5]);labs.push(h+"h")}}
+  else{var n=mode==="week"?7:new Date(d.getFullYear(),d.getMonth()+1,0).getDate(),st=mode==="week"?new Date(d.getFullYear(),d.getMonth(),d.getDate()-6):new Date(d.getFullYear(),d.getMonth(),1);
+    for(var i=0;i<n;i++){var a=new Date(st.getFullYear(),st.getMonth(),st.getDate()+i),b=new Date(st.getFullYear(),st.getMonth(),st.getDate()+i+1);B.push([a.getTime(),b.getTime()]);labs.push(a.getDate()+"/"+(a.getMonth()+1))}}
+  var pr=periods(),flags=B.map(function(b){return pr.some(function(p){return p.s<b[1]&&p.e>b[0]})});
+  var ks=["pee","water","tea","coffee","cold"],cnt={};
+  ks.forEach(function(k){cnt[k]=B.map(function(b){return data.filter(function(x){return x.type===k&&x.t>=b[0]&&x.t<b[1]}).length})});
+  var tot=ks.map(function(k){return NM[k]+" "+cnt[k].reduce(function(a,b){return a+b},0)}).join(" · ");
+  $("rs2").textContent=tot;
+  var ds=[{type:"bar",label:"Pee",data:cnt.pee,backgroundColor:COL.pee,order:2}];
+  ks.slice(1).forEach(function(k){ds.push({type:"line",label:NM[k],data:cnt[k],borderColor:COL[k],backgroundColor:COL[k],tension:.3,pointRadius:3,order:1})});
+  if(mode!=="day"){ks.forEach(function(k){ds.push({type:"line",label:NM[k]+" trend",data:trend(cnt[k]),borderColor:COL[k],borderDash:[6,4],pointRadius:0,borderWidth:1.5,order:0})})}
+  if(ch1)ch1.destroy();
+  ch1=new Chart($("c1"),{data:{labels:labs,datasets:ds},plugins:[shade],options:{responsive:true,scales:{y:{beginAtZero:true,ticks:{precision:0}}},plugins:{shade:{flags:flags},legend:{labels:{boxWidth:12,filter:function(i){return mode==="day"||i.text.indexOf("trend")<0||true}}}}}});
+  $("c2c").classList.toggle("hide",mode==="day");
+  if(ch2){ch2.destroy();ch2=null}
+  if(mode!=="day"){
+    var from=B[0][0],to=B[B.length-1][1],hp=[],hd=[],hl=[];
+    for(var h2=0;h2<24;h2++){hl.push(h2+"h");hp.push(0);hd.push(0)}
+    data.forEach(function(x){if(x.t>=from&&x.t<to&&TY[x.type]&&x.type!=="ps"&&x.type!=="pe"){var h3=new Date(x.t).getHours();if(x.type==="pee")hp[h3]++;else hd[h3]++}});
+    ch2=new Chart($("c2"),{data:{labels:hl,datasets:[{type:"bar",label:"Pee",data:hp,backgroundColor:COL.pee},{type:"line",label:"All drinks",data:hd,borderColor:COL.water,tension:.3,pointRadius:2}]},options:{responsive:true,scales:{y:{beginAtZero:true,ticks:{precision:0}}},plugins:{legend:{labels:{boxWidth:12}}}}})}
+}
+setNow();setInterval(setNow,30000);render();loadSheet();
 </script>
 </body>
 </html>
