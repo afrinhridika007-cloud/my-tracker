@@ -36,12 +36,13 @@ h2{font-size:14px;margin:0 0 8px;color:var(--muted);font-weight:600}
 .sum{font-size:13px;color:var(--muted)}
 .hide{display:none}
 canvas{max-height:260px}
+#mp .tab{padding:14px;font-size:16px;text-align:left}
 </style>
 </head>
 <body>
 <div class="top"><h1 id="ttl">Water &amp; Pee Tracker</h1><button class="menu" id="mn">☰</button></div>
 <div class="card hide" id="mp">
- <div class="two"><button class="tab" id="gh">🏠 Home</button><button class="tab" id="gr">📊 Report</button><button class="tab" id="gd">📅 Select date</button></div>
+ <div class="two" style="flex-direction:column"><button class="tab" id="gh">🏠 Home</button><button class="tab" id="gr">📊 Report</button><button class="tab" id="gd">📅 Select date</button></div>
  <button class="btn" style="background:#2e9b5f;margin-top:12px;font-size:15px;padding:12px" id="dl">⬇️ Download Excel/CSV</button>
  <button class="chip" style="margin-top:10px" id="rs">⬆️ Restore from CSV</button>
  <input type="file" id="f" accept=".csv" style="display:none">
@@ -98,6 +99,7 @@ function save(){try{localStorage.setItem(KEY,JSON.stringify(data));localStorage.
 function $(i){return document.getElementById(i)}
 function p2(n){return String(n).padStart(2,"0")}
 function dayKey(t){var d=new Date(t);return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate())}
+function hm12(t){var d=new Date(t),h=d.getHours(),ap=h>=12?"PM":"AM";h=h%12||12;return h+":"+p2(d.getMinutes())+" "+ap}
 function hm(t){var d=new Date(t);return p2(d.getHours())+":"+p2(d.getMinutes())}
 function fmtDay(k){var p=k.split("-");return new Date(p[0],p[1]-1,p[2]).toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short",year:"numeric"})}
 function nameType(n){for(var k in TY){if(TY[k][1].toLowerCase()===String(n).trim().toLowerCase())return k}return /urin|pee/i.test(n)?"pee":"water"}
@@ -164,15 +166,16 @@ function render(){
   if($("hd").value)renderLog($("hd").value,$("hlog"));
 }
 function edit(x){
-  var v=prompt("New time for this punch (24-hour, like 00:05)",hm(x.t));if(!v)return;
-  var m=v.match(/^(\d{1,2}):(\d{2})$/);if(!m||+m[1]>23||+m[2]>59){alert("Please type the time like 00:05");return}
-  var d=new Date(x.t);d.setHours(+m[1],+m[2],0,0);var nt=d.getTime();if(nt===x.t)return;
+  var v=prompt("New time for this punch, like 00:05 or 20:53",hm(x.t));if(!v)return;
+  var m=v.trim().match(/^(\d{1,2}):(\d{2})\s*(am|pm)?$/i);if(!m||+m[2]>59){alert("Please type the time like 20:53");return}
+  var h=+m[1],ap=(m[3]||"").toLowerCase();if(ap){if(h<1||h>12){alert("Please type the time like 20:53");return}h=h%12+(ap==="pm"?12:0)}else if(h>23){alert("Please type the time like 20:53");return}
+  var d=new Date(x.t);d.setHours(h,+m[2],0,0);var nt=d.getTime();if(nt===x.t)return;
   while(data.some(function(y){return y.t===nt}))nt++;
   data=data.filter(function(y){return y.t!==x.t});dels.push(String(x.t));
   data.push({t:nt,type:x.type,note:x.note});save();render();sync()}
 function renderLog(vd,out){
   out.innerHTML="";
-  var it=data.filter(function(x){return dayKey(x.t)===vd}).sort(function(a,b){return a.t-b.t});
+  var it=data.filter(function(x){return dayKey(x.t)===vd}).sort(function(a,b){return b.t-a.t});
   var c={};it.forEach(function(x){c[x.type]=(c[x.type]||0)+1});
   var card=document.createElement("div");card.className="card";
   var sm=["water","tea","coffee","cold","pee","meds"].filter(function(t){return c[t]}).map(function(t){return TY[t][0]+" "+c[t]}).join(" · ");
@@ -202,11 +205,14 @@ $("f").onchange=function(e){var fl=e.target.files[0];if(!fl)return;var r=new Fil
       var t=+m[5];if(have[t])return;data.push({t:t,type:nameType(m[3]),note:m[4].replace(/^"|"$/g,"").replace(/""/g,'"')})});
     save();render();sync();e.target.value=""};r.readAsText(fl)};
 
-$("mn").onclick=function(){$("mp").classList.toggle("hide")};
+var cur="home";
+$("mn").onclick=function(){
+  if($("mp").classList.contains("hide")){["home","dv","rep"].forEach(function(i){$(i).classList.add("hide")});$("mp").classList.remove("hide");$("ttl").textContent="Menu"}
+  else show(cur)};
 $("hd").value=dayKey(Date.now());
 $("hd").onchange=function(){render()};
 $("gd").onclick=function(){show("dv")};
-function show(v){$("dv").classList.toggle("hide",v!=="dv");$("home").classList.toggle("hide",v!=="home");$("rep").classList.toggle("hide",v!=="rep");$("mp").classList.add("hide");$("ttl").textContent=v==="home"?"Water & Pee Tracker":v==="dv"?"Select date":"Report";if(v==="rep")report()}
+function show(v){cur=v;$("dv").classList.toggle("hide",v!=="dv");$("home").classList.toggle("hide",v!=="home");$("rep").classList.toggle("hide",v!=="rep");$("mp").classList.add("hide");$("ttl").textContent=v==="home"?"Water & Pee Tracker":v==="dv"?"Select date":"Report";if(v==="rep")report()}
 $("gh").onclick=function(){show("home")};$("gr").onclick=function(){show("rep")};
 var mode="day",ch1,ch2,LR=null;
 document.querySelectorAll("#rep .tab").forEach(function(b){b.onclick=function(){mode=b.dataset.m;document.querySelectorAll("#rep .tab").forEach(function(x){x.classList.toggle("on",x===b)});report()}});
