@@ -103,7 +103,7 @@ function post(b){return fetch(URL_SHEET,{method:"POST",mode:"no-cors",headers:{"
 function sync(){
   if(syncing)return;
   var tasks=[];
-  dels.slice().forEach(function(id){tasks.push({b:{action:"delete",id:id},ok:function(){dels=dels.filter(function(d){return d!==id})}})});
+  dels.slice().forEach(function(id){tasks.push({b:{id:"del-"+id,date:dayKey(+id),time:hm(+id),type:"Deleted",comment:id},ok:function(){dels=dels.filter(function(d){return d!==id})}})});
   data.filter(function(x){return !x.s}).forEach(function(x){tasks.push({b:{id:String(x.t),date:dayKey(x.t),time:hm(x.t),type:TY[x.type][1],comment:x.note},ok:function(){x.s=1}})});
   if(!tasks.length){status();return}
   syncing=true;
@@ -116,8 +116,9 @@ function loadSheet(){
   fetch(URL_SHEET).then(function(r){return r.json()}).then(function(rows){
     var keep=data.filter(function(x){return !x.s}),have={};
     keep.forEach(function(x){have[x.t]=1});
-    var fresh=[];
-    rows.forEach(function(r){var t=+r.id;if(!t||have[t]||dels.indexOf(String(r.id))>-1)return;
+    var fresh=[],gone={};
+    rows.forEach(function(r){if(r.type==="Deleted")gone[String(r.comment)]=1});
+    rows.forEach(function(r){var t=+r.id;if(!t||r.type==="Deleted"||gone[String(r.id)]||have[t]||dels.indexOf(String(r.id))>-1)return;
       fresh.push({t:t,type:nameType(r.type),note:r.comment||"",s:1})});
     data=fresh.concat(keep);save();render();sync();
   }).catch(function(){sync()});
