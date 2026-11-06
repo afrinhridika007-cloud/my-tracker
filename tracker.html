@@ -9,6 +9,8 @@
 <meta name="apple-mobile-web-app-title" content="Tracker">
 <meta name="theme-color" content="#2f80ed">
 <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAES0lEQVR4nO3c3XXUShBF4TaLCJyIydAmQydiYuChWQJmfGSN+kd9qvb3yl24Z2p3yRfDPL28fRTgM9+uPgDWRRyQiAMScUAiDkjEAYk4IBEHJOKARBz/eX99vvoICyGOv2oZ9LEhDkjE8ce/C4PlUREHJOIo5bNVwfIoxIEdxCGXBMsjexz7BSTvI3sc2JE6jiOLIfPySB0H9uWN4/hKSLs8ksbx6Lxz9pE0DhyRMY5zayDh8sgYBw5KF0fLAsi2PNLFgeNyxdF+9VMtj0Rx9Jprnj4SxYFHZYmj73VPsjxSxDFilhn6iB/HuCmG7+P71QcYaMLw6pf48fPX6C90ibCbY+a1jrpCYsYxf1oh+wgYx1VzitdHtDiunVCwPkLFscJsVjhDL3HiWGcq65ykUZA4VpvHauc5J0Ica05izVM9JEIcGMQ+jpUv6MpnO8I7jvXf/fVPuMM7DgxFHJCM43DZ2C7nvGccB0ZzjcPrOnqdduMaByYgDkjEAckyDsdHuOOZLePAHMQBiTggEQck4oBEHJCIA5JfHI5/YFDZndwvDkxjFofd5bvhdX6nOLzeWcXoVTjFgcls4jC6cF9yeS02cWA+jzhcrtpxFq/I4zPBPv3QLYv3tzL90DCPzfEpl3fc5Zz3jOPAaMZxuDxWXM55zzUOr3fc67Qb1zgwgWUcjhfR8cx+cTi+y5Xdyf3iwDRmcdhdvhte5zeLAzMRBySnOLx2smL0KpziwGQeP5Utgy/c5J/6vr8+W/w0ziaOEfYntP2q0YOgr6RxPHRx63+cMJGM33OcW+kWD4K+0sXRMuNsfXjE0Wult0+3Vx8WDymPOLroNdc8+yNLHH0nmqSPLHHghBRxjLjoGZZHijhwDnFAih/HuP0f/skSPw6cRhyQiAOSRxzxnu4Wr8gjDlyCOCDFj2Po3/Yb9DsvIn4cOM0mDovv4A5yeS02cbQYsf/DP1OKVxwuF26f0atwiqNF34ueYW2UPHGUfhNNUkaxi6NxJ7fPtfF3MHqmFLs42rVMN8/OqPziaL9852bcXobX2iilPL28fVx9hjO6XOKD05r5tZaS9N/KVtvU3T9bfRDXzVGshue4Norj9xwbl3fc5Zz3jOMoDu/7+ifc4R1HWfvdX/lsR9jHUVadwZqnekiEOMp6k1jtPOcEiaOsNI91TtIoThxljamscIZeQsVRrp5NpDJKyD8hveTD/4JlUUXbHJuZ0wpZRgm5OTYTVkjULKrIcVQjPog4dhOb+HFsuiySJFlUieKobqb7ZSupariRLo4bmWf/pbD/t4J2xAGJOCARByTigEQckIgDEnFAIg5IxAGJOCARByTigEQckIgDEnFAIg5IxAGJOCARByTigEQckIgDEnFAIg5IxAGJOCARByTigEQckIgDEnFAIg5IxAGJOCARByTigEQckIgDEnFAIg5IxAGJOCARByTigEQckIgDEnFA+g20pRBuPWjj2QAAAABJRU5ErkJggg==">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <title>Water & Pee Tracker</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
@@ -38,7 +40,15 @@ canvas{max-height:260px}
 </head>
 <body>
 <div class="top"><h1 id="ttl">Water &amp; Pee Tracker</h1><button class="menu" id="mn">☰</button></div>
-<div class="card hide" id="mp"><div class="two"><button class="tab" id="gh">Home</button><button class="tab" id="gr">Report</button></div></div>
+<div class="card hide" id="mp">
+ <div class="two"><button class="tab" id="gh">🏠 Home</button><button class="tab" id="gr">📊 Report</button></div>
+ <h2 style="margin-top:12px">📅 Select date</h2>
+ <input type="date" id="hd" style="margin-top:0">
+ <button class="chip" id="td">Back to today</button>
+ <button class="btn" style="background:#2e9b5f;margin-top:12px;font-size:15px;padding:12px" id="dl">⬇️ Download Excel/CSV</button>
+ <button class="chip" style="margin-top:10px" id="rs">⬆️ Restore from CSV</button>
+ <input type="file" id="f" accept=".csv" style="display:none">
+</div>
 <div class="sum" id="st" style="margin-bottom:10px"></div>
 
 <div id="home">
@@ -59,14 +69,11 @@ canvas{max-height:260px}
 
 <div class="card"><button class="btn" style="background:#f2a900;color:#1d1400" id="p">🚽 Urinated</button></div>
 
+<div class="card"><button class="btn" style="background:#16a085" id="md">💊 Meds</button><input id="mc" placeholder="Which medicine? e.g. name and dose"></div>
+
 <div class="card"><h2 id="ps">Period</h2>
   <div class="two"><button class="btn" style="background:#c0392b" id="pst">🩸 Period started</button><button class="btn" style="background:#7d3c98" id="pen">Period ended</button></div></div>
 
-<div class="card">
-  <button class="btn" style="background:#2e9b5f" id="dl">⬇️ Download Excel/CSV</button>
-  <button class="chip" style="margin-top:10px" id="rs">⬆️ Restore from CSV</button>
-  <input type="file" id="f" accept=".csv" style="display:none">
-</div>
 <div id="log"></div>
 </div>
 
@@ -78,13 +85,14 @@ canvas{max-height:260px}
   </div>
   <div class="card"><canvas id="c1"></canvas></div>
   <div class="card hide" id="c2c"><h2>Busiest time of day</h2><canvas id="c2"></canvas></div>
+  <div class="card"><div class="two"><button class="btn" style="background:#c0392b;font-size:15px;padding:12px" id="dpdf">⬇️ PDF</button><button class="btn" style="background:#2e9b5f;font-size:15px;padding:12px" id="dxl">⬇️ Excel</button></div></div>
   <div class="sum">Red shading = period days. Dashed lines = trend. Tap a name above the chart to hide or show it.</div>
 </div>
 
 <script>
 var KEY="wp_log_v1",DK="wp_del_v1",URL_SHEET="https://script.google.com/macros/s/AKfycbx7l6K__o5ttjNMa7XSOeh7mKxjPlEYwuJdRXUhnl_kPX50aI27GXZkJw7hit-yIt13_w/exec";
-var TY={water:["💧","Drink water"],tea:["🍵","Tea"],coffee:["☕","Coffee"],cold:["🥤","Cold drink"],pee:["🚽","Urinate"],ps:["🩸","Period start"],pe:["🩸","Period end"]};
-var data=[],dels=[],syncing=false,edited=false,cafe="tea";
+var TY={water:["💧","Drink water"],tea:["🍵","Tea"],coffee:["☕","Coffee"],cold:["🥤","Cold drink"],pee:["🚽","Urinate"],ps:["🩸","Period start"],pe:["🩸","Period end"],meds:["💊","Meds"]};
+var viewDate=dayKey(Date.now()),data=[],dels=[],syncing=false,edited=false,cafe="tea";
 try{data=JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){}
 try{dels=JSON.parse(localStorage.getItem(DK)||"[]")}catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(data));localStorage.setItem(DK,JSON.stringify(dels))}catch(e){}}
@@ -131,6 +139,7 @@ function del(t){data=data.filter(function(x){return x.t!==t});dels.push(String(t
 $("w").onclick=function(){add("water",$("c").value.trim());$("c").value=""};
 $("p").onclick=function(){add("pee")};
 $("pst").onclick=function(){add("ps")};
+$("md").onclick=function(){add("meds",$("mc").value.trim());$("mc").value=""};
 $("pen").onclick=function(){add("pe")};
 $("cb").onclick=function(){add(cafe,$("cc").value.trim());$("cc").value=""};
 ["1 gulp","2 gulps","3 gulps","1 cup","1 bottle"].forEach(function(s){
@@ -153,12 +162,13 @@ function render(){
   $("ps").textContent=last&&last.open?("Period running since "+fmtDay(dayKey(last.s))):"Period";
   status();
   var g={};data.forEach(function(x){var k=dayKey(x.t);(g[k]=g[k]||[]).push(x)});
-  var keys=Object.keys(g).sort().reverse(),out=$("log");out.innerHTML="";
-  if(!keys.length){out.innerHTML='<p class="sum">No records yet. Tap a button above.</p>';return}
+  var keys=g[viewDate]?[viewDate]:[],out=$("log");out.innerHTML="";
+  var hdr=document.createElement("div");hdr.className="sum";hdr.style.margin="0 0 8px";hdr.textContent=(viewDate===dayKey(Date.now())?"Today – ":"")+fmtDay(viewDate);out.appendChild(hdr);
+  if(!keys.length){var np=document.createElement("p");np.className="sum";np.textContent="No records for this date.";out.appendChild(np);return}
   keys.forEach(function(k){
     var it=g[k].sort(function(a,b){return b.t-a.t}),c={};it.forEach(function(x){c[x.type]=(c[x.type]||0)+1});
     var card=document.createElement("div");card.className="card";
-    var sm=["water","tea","coffee","cold","pee"].filter(function(t){return c[t]}).map(function(t){return TY[t][0]+" "+c[t]}).join(" · ");
+    var sm=["water","tea","coffee","cold","pee","meds"].filter(function(t){return c[t]}).map(function(t){return TY[t][0]+" "+c[t]}).join(" · ");
     card.innerHTML="<strong>"+fmtDay(k)+'</strong><div class="sum">'+sm+"</div>";
     it.forEach(function(x){
       var r=document.createElement("div");r.className="row";
@@ -183,9 +193,12 @@ $("f").onchange=function(e){var fl=e.target.files[0];if(!fl)return;var r=new Fil
     save();render();sync();e.target.value=""};r.readAsText(fl)};
 
 $("mn").onclick=function(){$("mp").classList.toggle("hide")};
+$("hd").value=viewDate;
+$("hd").onchange=function(){viewDate=this.value||dayKey(Date.now());show("home");render()};
+$("td").onclick=function(){viewDate=dayKey(Date.now());$("hd").value=viewDate;show("home");render()};
 function show(v){$("home").classList.toggle("hide",v!=="home");$("rep").classList.toggle("hide",v!=="rep");$("mp").classList.add("hide");$("ttl").textContent=v==="home"?"Water & Pee Tracker":"Report";if(v==="rep")report()}
 $("gh").onclick=function(){show("home")};$("gr").onclick=function(){show("rep")};
-var mode="day",ch1,ch2;
+var mode="day",ch1,ch2,LR=null;
 document.querySelectorAll("#rep .tab").forEach(function(b){b.onclick=function(){mode=b.dataset.m;document.querySelectorAll("#rep .tab").forEach(function(x){x.classList.toggle("on",x===b)});report()}});
 $("rd").value=dayKey(Date.now());$("rd").onchange=function(){report()};
 var COL={pee:"#f2a900",water:"#2f80ed",tea:"#2e9b5f",coffee:"#8a5a2b",cold:"#9b59b6"},NM={pee:"Pee",water:"Water",tea:"Tea",coffee:"Coffee",cold:"Cold drink"};
@@ -202,6 +215,7 @@ function report(){
   ks.forEach(function(k){cnt[k]=B.map(function(b){return data.filter(function(x){return x.type===k&&x.t>=b[0]&&x.t<b[1]}).length})});
   var tot=ks.map(function(k){return NM[k]+" "+cnt[k].reduce(function(a,b){return a+b},0)}).join(" · ");
   $("rs2").textContent=tot;
+  LR={title:(mode==="day"?"Daily":mode==="week"?"Weekly":"Monthly")+" report: "+dayKey(B[0][0])+(mode==="day"?"":" to "+dayKey(B[B.length-1][1]-1)),labs:labs,cnt:cnt,flags:flags,tot:tot};
   var ds=[{type:"bar",label:"Pee",data:cnt.pee,backgroundColor:COL.pee,order:2}];
   ks.slice(1).forEach(function(k){ds.push({type:"line",label:NM[k],data:cnt[k],borderColor:COL[k],backgroundColor:COL[k],tension:.3,pointRadius:3,order:1})});
   if(mode!=="day"){ks.forEach(function(k){ds.push({type:"line",label:NM[k]+" trend",data:trend(cnt[k]),borderColor:COL[k],borderDash:[6,4],pointRadius:0,borderWidth:1.5,order:0})})}
@@ -212,9 +226,29 @@ function report(){
   if(mode!=="day"){
     var from=B[0][0],to=B[B.length-1][1],hp=[],hd=[],hl=[];
     for(var h2=0;h2<24;h2++){hl.push(h2+"h");hp.push(0);hd.push(0)}
-    data.forEach(function(x){if(x.t>=from&&x.t<to&&TY[x.type]&&x.type!=="ps"&&x.type!=="pe"){var h3=new Date(x.t).getHours();if(x.type==="pee")hp[h3]++;else hd[h3]++}});
+    data.forEach(function(x){if(x.t>=from&&x.t<to&&TY[x.type]&&x.type!=="ps"&&x.type!=="pe"&&x.type!=="meds"){var h3=new Date(x.t).getHours();if(x.type==="pee")hp[h3]++;else hd[h3]++}});
     ch2=new Chart($("c2"),{data:{labels:hl,datasets:[{type:"bar",label:"Pee",data:hp,backgroundColor:COL.pee},{type:"line",label:"All drinks",data:hd,borderColor:COL.water,tension:.3,pointRadius:2}]},options:{responsive:true,scales:{y:{beginAtZero:true,ticks:{precision:0}}},plugins:{legend:{labels:{boxWidth:12}}}}})}
 }
+function saveBlob(b,n){var a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=n;document.body.appendChild(a);a.click();a.remove()}
+function imgOf(c){var k=document.createElement("canvas");k.width=c.canvas.width;k.height=c.canvas.height;var x=k.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,k.width,k.height);x.drawImage(c.canvas,0,0);return k.toDataURL("image/png")}
+$("dxl").onclick=function(){
+  if(!LR||typeof ExcelJS==="undefined"){alert("Open the report first. Excel needs internet.");return}
+  var wb=new ExcelJS.Workbook(),ws=wb.addWorksheet("Report");
+  ws.addRow([LR.title]).font={bold:true,size:14};ws.addRow([LR.tot]);ws.addRow([]);
+  ws.addRow([mode==="day"?"Hour":"Date","Pee","Water","Tea","Coffee","Cold drink","Period day"]).font={bold:true};
+  LR.labs.forEach(function(l,i){ws.addRow([l,LR.cnt.pee[i],LR.cnt.water[i],LR.cnt.tea[i],LR.cnt.coffee[i],LR.cnt.cold[i],LR.flags[i]?"Yes":""])});
+  var r=LR.labs.length+6;
+  [ch1,ch2].forEach(function(c){if(!c)return;var w=640,h=Math.round(w*c.canvas.height/c.canvas.width);
+    ws.addImage(wb.addImage({base64:imgOf(c),extension:"png"}),{tl:{col:0,row:r},ext:{width:w,height:h}});r+=Math.ceil(h/20)+2});
+  ws.columns.forEach(function(c){c.width=13});
+  wb.xlsx.writeBuffer().then(function(b){saveBlob(new Blob([b],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}),"graph-report-"+$("rd").value+".xlsx")})};
+$("dpdf").onclick=function(){
+  if(!LR||!window.jspdf){alert("Open the report first. PDF needs internet.");return}
+  var doc=new window.jspdf.jsPDF(),y=16;
+  doc.setFontSize(16);doc.text(LR.title,10,y);y+=8;doc.setFontSize(10);doc.text(LR.tot,10,y);y+=6;
+  doc.text("Red shading = period days. Dashed lines = trend.",10,y);y+=6;
+  [ch1,ch2].forEach(function(c){if(!c)return;var w=190,h=w*c.canvas.height/c.canvas.width;if(y+h>285){doc.addPage();y=16}doc.addImage(imgOf(c),"PNG",10,y,w,h);y+=h+6});
+  doc.save("graph-report-"+$("rd").value+".pdf")};
 setNow();setInterval(setNow,30000);render();loadSheet();
 </script>
 </body>
